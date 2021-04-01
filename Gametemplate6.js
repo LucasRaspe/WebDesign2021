@@ -8,6 +8,8 @@ let canvas;
 let ctx;
 let WIDTH = 1024;
 let HEIGHT= 768;
+let GRAVITY = 9.8; 
+let timerThen = Math.floor(Date.now() / 1000);
 
 //container array for mobs/enemies
 let mobs = [];
@@ -90,6 +92,7 @@ class Sprite {
         obj.x <= this.x + this.w &&
         this.y <= obj.y + obj.h &&
         obj.y <= this.y + this.h
+        
       ) {
         console.log('collided with ' + obj);
         return true;
@@ -102,14 +105,48 @@ class Player extends Sprite {
   super(w, h, x, y, c);
   this.vx = vx;
   this.vy = vy;
-  this.speed = 3;
+  this.speed = 6;
+  class Sprite {
+    constructor(w, h, x, y, c) {
+      this.w = w;
+      this.h = h;
+      this.x = x;
+      this.y = y;
+      this.color = c;
+      this.spliced = false;
+      }
+      inbounds(){
+        if (this.x + this.w < WIDTH &&
+            this.x > 0 &&
+            this.y > 0 &&
+            this.y + this.h < HEIGHT){
+              console.log ('inbounds..');
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+      collide(obj) {
+        if (this.x <= obj.x + obj.w &&
+          obj.x <= this.x + this.w &&
+          this.y <= obj.y + obj.h &&
+          obj.y <= this.y + this.h
+          
+  
+          
+        ) {
+          console.log('collided with ' + obj);
+          return true;
+        }
+      }
+  }
   this.canjump = true;
   }
   moveinput() {
     if ('w' in keysDown || 'W' in keysDown) { // Player control
         this.vx = 0;
         this.vy = -this.speed;
-        console.log('w!!!');
     } else if ('s' in keysDown || 'S' in keysDown) { // Player control
         this.vx = 0;
         this.vy = this.speed;
@@ -121,9 +158,12 @@ class Player extends Sprite {
     } else if ('d' in keysDown || 'D' in keysDown) { // Player control
         this.vy = 0;
         this.vx = this.speed;
-    } else if ('e' in keysDown || 'D' in keysDown) { // Player control
+    } else if ('e' in keysDown || 'E' in keysDown) { // Player control
       this.w += 1;
   }
+  else if ('p' in keysDown || 'P' in keysDown) { // Player control
+    paused = true;
+}
     else if (' ' in keysDown && this.canjump) { // Player control
       console.log(this.canjump);
       this.vy -= 45;
@@ -136,7 +176,6 @@ class Player extends Sprite {
     }
 }
   update(){
-    this.vy = GRAVITY;
     this.moveinput();
     if (!this.inbounds()){
       if (this.x <= 0) {
@@ -152,19 +191,9 @@ class Player extends Sprite {
       // alert('out of bounds');
       // console.log('out of bounds');
     }
-    xSpeed /= 2;
-ySpeed /= 2;
-
-xMovemeent = 2 /* Your original movement on X axis */
-yMovemeent = 2 /* Your original movement on Y axis */
-speed = 1.0; // original speed
-
+    
     this.x += this.vx;
     this.y += this.vy;
-
-    xPosition += xMovement * speed;
-yPosition += yMovement * speed;
-
   }
   draw() {
     ctx.fillStyle = this.color;
@@ -202,7 +231,7 @@ class Mob extends Sprite {
 }
 
 // create instance of class
-let player = new Player(25, 25, WIDTH/2, HEIGHT/2, 'red', 0, 0);
+let player = new Player(25, 25, WIDTH/2, HEIGHT/2, 'blue', 0, 0);
 
 // adds two different sets of mobs to the mobs array
 for (i = 0; i < 10; i++){
@@ -246,17 +275,69 @@ function drawText(color, font, align, base, text, x, y) {
   ctx.textBaseline = base;
   ctx.fillText(text, x, y);
 }
+//Timers and counters
+
+function countUp(end) {
+  timerNow = Math.floor(Date.now() / 1000);
+  currentTimer = timerNow - timerThen;
+  if (currentTimer >= end){
+    if (mobs2.length < 10){
+    spawnMob(20, mobs2);
+  }
+    return end;
+  }
+  return currentTimer;
+}
+
+function counter() {
+  timerNow = Math.floor(Date.now() / 1000);
+  currentTimer = timerNow - timerThen;
+  return currentTimer;
+}
+
+function timerUp(x, y) {
+  timerNow = Math.floor(Date.now() / 1000);
+  currentTimer = timerNow - timerThen;
+  if (currentTimer <= y && typeof (currentTimer + x) != "undefined") {
+      return currentTimer;
+      
+  } else {
+      timerThen = timerNow;
+      return x;
+  }
+}
+
+function timerDown() {
+  this.time = function (x, y) {
+      // this.timerThen = Math.floor(Date.now() / 1000);
+      // this.timerNow = Math.floor(Date.now() / 1000);
+      this.timerThen = timerThen;
+      this.timerNow = Math.floor(Date.now() / 1000);
+      this.tick = this.timerNow - this.timerThen;
+      if (this.tick <= y && typeof (this.tick + x) != "undefined") {
+          return y - this.tick;
+      } else {
+          this.timerThen = this.timerNow;
+          return x;
+      }
+  };
+}
 
 // ########## updates all elements on canvas ##########
 function update() {
   player.update();
   //updates all mobs in a group
   for (let m of mobs){
-    m.update();
+    m.update();{
     if (player.collide(m)){
       m.spliced = true;
+      drawText ('Red', "50px Helvetica,'middle','middle', You Lose")}
+      
     }
+
   }
+  for (let m in mobs)
+  if(mobs.spliced = true) drawText ('Red', "50px Helvetica,'middle','middle', You Lose")
   for (let m in mobs){
     if (mobs[m].spliced){
       mobs.splice(m, 1);
@@ -269,6 +350,7 @@ function update() {
 function draw() {
   // clears the canvas before drawing
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawText('black', "24px Helvetica", "left", "top", "Timer: " + countUp(999), 500, 0);
   drawText('black', "24px Helvetica", "left", "top", "FPS: " + fps, 400, 0);
   drawText('black', "24px Helvetica", "left", "top", "Delta: " + gDelta, 400, 32);
   drawText('black', "24px Helvetica", "left", "top", "mousepos: " + mouseX + " " + mouseY, 0, 0);
@@ -278,7 +360,9 @@ function draw() {
     m.draw();
   }
 }
+{
 
+}
 // set variables necessary for game loop
 let fps;
 let now;
@@ -299,29 +383,17 @@ function main() {
   then = now;
   requestAnimationFrame(main);
 }
-<div id="safeTimer">
-<h2>Safe Timer</h2>
-<p id="safeTimerDisplay">00:30</p>
-</div>
-function timer(){
-    var sec = 30;
-    var timer = setInterval(function(){
-        document.getElementById('safeTimerDisplay').innerHTML='00:'+sec;
-        sec--;
-        if (sec < 0) {
-            clearInterval(timer);
-        }
-    }, 1000);
-}
-<script src="/path/to/script.js"></script>
-// this example takes 2 seconds to run
-const start = Date.now();
 
-// After a certain amount of time, run this to see how much time passed.
-const milliseconds = Date.now() - start;
-
-console.log('Seconds passed = ' + millis / 1000);
-// Seconds passed = *Time passed*
-if m.spliced = true;
-if class Sprite<10 
-function update()
+function update() {
+  player.update();
+  //updates all mobs in a group
+  for (let m of mobs){
+    m.update();{
+    if (player.collide(m)){ let (m.spliced = true);drawText ('Red', "50px Helvetica,'middle','middle', You Lose",
+      m.spliced = true)
+      let (m.spliced = true);drawText ('Red', "50px Helvetica,'middle','middle', You Lose",
+     
+      )}
+  }
+}}
+{}
