@@ -105,7 +105,8 @@ class Player extends Sprite {
   super(w, h, x, y, c);
   this.vx = vx;
   this.vy = vy;
-  this.speed = 6;
+  //tried usuing hte random integer plug in but cant find one  that changes for a changing speed
+  this.speed = 4;
   class Sprite {
     constructor(w, h, x, y, c) {
       this.w = w;
