@@ -233,7 +233,7 @@ let player = new Player(25, 25, WIDTH / 2, HEIGHT / 2, 'blue', 0, 0);
 
 // adds two different sets of mobs to the mobs array
 for (i = 0; i < 10; i++) {
-  mobs.push(new Mob(60, 60, 200, 100, 'orange', Math.random() * -2, Math.random() * -2));
+  mobs.push(new Mob(60, 60, 200, 100, 'grey', Math.random() * -2, Math.random() * -2));
   console.log(mobs);
 }
 
@@ -332,6 +332,7 @@ function update() {
       m.vy *= 1.0011;
       if (GAMETIME > 30)
         alert("you win")
+    
 
 
     }
@@ -346,7 +347,7 @@ function update() {
         thread.sleep(2000);
 
         if (m.spliced = true); {
-          drawText('Red', "50px Helvetica,'middle','middle', You Lose")
+          //drawText('Red', "50px Helvetica,'middle','middle', You Lose")
         }
       }
     }
